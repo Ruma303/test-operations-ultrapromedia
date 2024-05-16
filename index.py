@@ -15,10 +15,17 @@ def estrai_dati_prodotto(prodotto_html):
     descrizione_items = descrizione_div.find_all('li') if descrizione_div else []
     descrizione = " | ".join([item.text.strip() for item in descrizione_items]) if descrizione_items else "Descrizione non disponibile"
 
-    prezzo = "Informazione non disponibile"  # Se il prezzo non è disponibile nel tuo HTML di esempio
+    # Estrai il prezzo
+    prezzo_tag = prodotto_html.find('span', class_='price')
+    prezzo = prezzo_tag.text.strip() if prezzo_tag else "Prezzo non disponibile"
+
+    # Estrai il link foto
     img_tag = prodotto_html.find('img', class_='product-image-photo')
     link_foto = img_tag['src'] if img_tag else "Immagine non disponibile"
-    disponibilita = prodotto_html.find('span', class_='virtual-product-delivery').text.strip() if prodotto_html.find('span', class_='virtual-product-delivery') else "Disponibilità non disponibile"
+
+    # Estrai la disponibilità
+    disponibilita_tag = prodotto_html.find('p', class_='in-stock_add_cart')
+    disponibilita = disponibilita_tag.text.strip() if disponibilita_tag else "Disponibilità non disponibile"
 
     return {
         'Codice': codice,
@@ -32,7 +39,7 @@ def estrai_dati_prodotto(prodotto_html):
 def scrape_page(url):
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.content, 'html.parser')
-    prodotti_html = soup.find_all('div', class_='product details product-item-details')
+    prodotti_html = soup.find_all('div', class_='product-item-info')
     for prodotto_html in prodotti_html:
         prodotti.append(estrai_dati_prodotto(prodotto_html))
     next_page = soup.find('a', class_='action next')
