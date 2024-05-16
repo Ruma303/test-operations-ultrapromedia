@@ -21,13 +21,16 @@ def estrai_dati_prodotto(prodotto):
     img_tag = prodotto.find('img', class_='product-image-photo')
     link_foto = img_tag['src'] if img_tag else "Immagine non disponibile"
 
-    disponibilita_tag = prodotto.find('div', class_='availibility')
+    disponibilita_tag = prodotto.find('p', class_='in-stock_add_cart')
+    disponibilita = disponibilita_tag.text.strip() if disponibilita_tag else "Prodotto non disponibile"
+
+    """ disponibilita_tag = prodotto.find('div', class_='availibility')
     if disponibilita_tag:
         p_tags = disponibilita_tag.find_all('p')
         disponibilita_texts = [p.text.strip() for p in p_tags]
         disponibilita = " | ".join(disponibilita_texts)
     else:
-        disponibilita = "Disponibilità non disponibile"
+        disponibilita = "Disponibilità non disponibile" """
 
     return {
         'Codice': codice,
