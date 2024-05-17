@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import re 
 
 url = "https://www.firewalls.com/licensing/sonicwall-firewalls.html"
 headers = {'User-Agent': 'Mozilla/5.0'}
@@ -16,21 +17,14 @@ def estrai_dati_prodotto(prodotto):
     descrizione = " | ".join([item.text.strip() for item in descrizione_items]) if descrizione_items else "Descrizione non disponibile"
 
     prezzo_tag = prodotto.find('span', class_='price')
-    prezzo = prezzo_tag.text.strip() if prezzo_tag else "Prezzo non disponibile"
+    prezzo_testo = prezzo_tag.text.strip() if prezzo_tag else "Prezzo non disponibile"
+
+    prezzo = float(re.sub(r'[^\d.]', '', prezzo_testo)) if prezzo_testo != "Prezzo non disponibile" else prezzo_testo
 
     img_tag = prodotto.find('img', class_='product-image-photo')
     link_foto = img_tag['src'] if img_tag else "Immagine non disponibile"
-
     disponibilita_tag = prodotto.find('p', class_='in-stock_add_cart')
     disponibilita = disponibilita_tag.text.strip() if disponibilita_tag else "Prodotto non disponibile"
-
-    """ disponibilita_tag = prodotto.find('div', class_='availibility')
-    if disponibilita_tag:
-        p_tags = disponibilita_tag.find_all('p')
-        disponibilita_texts = [p.text.strip() for p in p_tags]
-        disponibilita = " | ".join(disponibilita_texts)
-    else:
-        disponibilita = "Disponibilità non disponibile" """
 
     return {
         'Codice': codice,
